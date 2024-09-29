@@ -7,6 +7,7 @@ using PromoCodeFactory.Core.Domain.Administration;
 using PromoCodeFactory.Core.Domain.PromoCodeManagement;
 using PromoCodeFactory.DataAccess.Data;
 using PromoCodeFactory.DataAccess.Repositories;
+using System;
 
 namespace PromoCodeFactory.WebHost
 {
@@ -17,7 +18,7 @@ namespace PromoCodeFactory.WebHost
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddScoped(typeof(IRepository<Employee>), (x) =>
+            services.AddSingleton(typeof(IRepository<Employee>), (x) =>
                 new InMemoryRepository<Employee>(FakeDataFactory.Employees));
             services.AddScoped(typeof(IRepository<Role>), (x) =>
                 new InMemoryRepository<Role>(FakeDataFactory.Roles));
@@ -28,6 +29,19 @@ namespace PromoCodeFactory.WebHost
 
             services.AddOpenApiDocument(options =>
             {
+                options.PostProcess = document =>
+                {
+                    foreach (var schema in document.Definitions.Values)
+                    {
+                        foreach (var property in schema.Properties.Values)
+                        {
+                            if (property.Type == NJsonSchema.JsonObjectType.String && property.Format == "guid")
+                            {
+                                property.Format = "uuid";
+                            }
+                        }
+                    }
+                };
                 options.Title = "PromoCode Factory API Doc";
                 options.Version = "1.0";
             });
