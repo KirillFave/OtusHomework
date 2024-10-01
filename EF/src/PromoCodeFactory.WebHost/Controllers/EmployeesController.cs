@@ -77,9 +77,15 @@ namespace PromoCodeFactory.WebHost.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public void CreateEmployee(Employee employee)
+        public ActionResult CreateEmployee(Employee employee)
         {
+            if (!employee.IsValid)
+            {
+                return BadRequest(employee);
+            }
+
             _employeeRepository.Add(employee);
+            return Created();
         }
 
         /// <summary>
@@ -87,9 +93,15 @@ namespace PromoCodeFactory.WebHost.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPut]
-        public async Task UpdateEmployee(Employee employee)
+        public ActionResult UpdateEmployee(Employee employee)
         {
-            await _employeeRepository.Update(employee);
+            if (!employee.IsValid)
+            {
+                return BadRequest(employee);
+            }
+
+            bool result = _employeeRepository.Update(employee);
+            return result ? NoContent() : NotFound();
         }
 
         /// <summary>
@@ -97,9 +109,15 @@ namespace PromoCodeFactory.WebHost.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpDelete]
-        public async Task DeleteEmployee(Guid id)
+        public ActionResult DeleteEmployee(Guid guid)
         {
-            await _employeeRepository.Delete(id);
+            if (guid == Guid.Empty)
+            {
+                return BadRequest("Invalid guid.");
+            }
+
+            bool result = _employeeRepository.Delete(guid);
+            return result ? NoContent() : NotFound();
         }
     }
 }

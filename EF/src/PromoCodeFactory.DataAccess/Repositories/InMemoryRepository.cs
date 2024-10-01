@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using PromoCodeFactory.Core.Abstractions.Repositories;
 using PromoCodeFactory.Core.Domain;
@@ -13,14 +14,14 @@ namespace PromoCodeFactory.DataAccess.Repositories
         : IRepository<T>
         where T : BaseEntity
     {
-        protected IEnumerable<T> Data { get; set; }
+        protected List<T> Data { get; set; }
 
-        public InMemoryRepository(IEnumerable<T> data)
+        public InMemoryRepository(List<T> data)
         {
             Data = data;
         }
 
-        public Task<IEnumerable<T>> GetAllAsync()
+        public Task<List<T>> GetAllAsync()
         {
             return Task.FromResult(Data);
         }
@@ -30,44 +31,36 @@ namespace PromoCodeFactory.DataAccess.Repositories
             return Task.FromResult(Data.FirstOrDefault(x => x.Id == id));
         }
 
-        public Task Add(T entity)
+        public void Add(T entity)
         {
-            Data = Data.Append<T>(entity);
-            return Task.CompletedTask;
+            Data.Add(entity);
         }
 
-        public Task Update(T entity)
+        public bool Update(T entity)
         {
-            List<T> list = Data.ToList();
+            int index = Data.FindIndex(x => x.Id == entity.Id);
 
-            for (int i = 0; i < list.Count; i++)
+            if (index != -1)
             {
-                if (list[i].Id == entity.Id)
-                {
-                    list[i] = entity;
-                    Data = list;
-                    return Task.CompletedTask;
-                }
+                Data[index] = entity;
+                return true;
             }
 
-            throw new KeyNotFoundException($"{nameof(T)} with ID {entity.Id} not found.");
+            return false;
         }
 
-        public Task Delete(Guid id)
+        public bool Delete(Guid id)
         { 
-            List<T> list = Data.ToList();
-
-            T entityToRemove = list.FirstOrDefault(e => e.Id == id);
+            T entityToRemove = Data.FirstOrDefault(e => e.Id == id);
 
             if (entityToRemove is null)
             {
-                throw new KeyNotFoundException($"{nameof(T)} with ID {id} not found.");
+                return false;
             }
 
-            list.Remove(entityToRemove);
+            Data.Remove(entityToRemove);
                 
-            Data = list;
-            return Task.CompletedTask;
+            return true;
         }
     }
 }

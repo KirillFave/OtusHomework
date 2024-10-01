@@ -8,7 +8,7 @@ namespace PromoCodeFactory.DataAccess.Data
 {
     public static class FakeDataFactory
     {
-        public static IEnumerable<Employee> Employees => new List<Employee>()
+        public static List<Employee> Employees => new List<Employee>()
         {
             new Employee()
             {
@@ -30,7 +30,7 @@ namespace PromoCodeFactory.DataAccess.Data
             },
         };
 
-        public static IEnumerable<Role> Roles => new List<Role>()
+        public static List<Role> Roles => new List<Role>()
         {
             new Role()
             {
@@ -46,7 +46,7 @@ namespace PromoCodeFactory.DataAccess.Data
             }
         };
 
-        public static IEnumerable<Preference> Preferences => new List<Preference>()
+        public static List<Preference> Preferences => new List<Preference>()
         {
             new Preference()
             {
@@ -65,7 +65,7 @@ namespace PromoCodeFactory.DataAccess.Data
             }
         };
 
-        public static IEnumerable<Customer> Customers
+        public static List<Customer> Customers
         {
             get
             {

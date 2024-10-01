@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PromoCodeFactory.Core.Domain;
@@ -8,14 +9,14 @@ namespace PromoCodeFactory.Core.Abstractions.Repositories
     public interface IRepository<T>
         where T : BaseEntity
     {
-        Task<IEnumerable<T>> GetAllAsync();
+        Task<List<T>> GetAllAsync();
 
         Task<T> GetByIdAsync(Guid id);
 
-        Task Add(T entity);
+        void Add(T entity);
 
-        Task Update(T entity);
+        bool Update(T entity);
 
-        Task Delete(Guid id);
+        bool Delete(Guid id);
     }
 }
